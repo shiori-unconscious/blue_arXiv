@@ -1,0 +1,134 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block  head_content %}
+    <link rel="stylesheet" type="text/css" href="{% static 'login/css/register.css' %}">
+    <title>注册</title>
+{% endblock %}
+
+{% block body_content %}
+<div class="flex-container">
+    <div class="login-container">
+        <h2>注册</h2>
+        {% if form.error_message %}
+            {{form.error_message}}
+        {% endif %} 
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-exclude-submisson">
+                <div class="input-container">
+                    <label for="id_username">用户名</label>
+                    <input type="text" name="username" id="id_username">
+                </div>
+                <span id="username-result"></span>
+                <div class="input-container">
+                    <label for="id_password">密码</label>
+                    <input type="password" name="password1" id="id_password">
+                </div>
+                <div class="error-container">
+                    <span id="length-requirement">⚠️密码至少包括8个字符</span>
+                    <span id="digit-requirement">⚠️密码需包含至少一个数字</span>
+                </div>
+                <div class="input-container">
+                    <label for="id_password2">确认密码</label>
+                    <input type="password" name="password2" id="id_password2">
+                </div>
+                <span id="password2-requirement"></span>
+            </div>
+            <button type="submit" class="submit-button">注册</button>
+        </form>
+    </div>
+</div>
+<script>
+    // 获取密码输入框
+    const passwordInput = document.getElementById('id_password');
+    // 获取显示密码要求的元素
+    const lengthRequirement = document.getElementById('length-requirement');
+    const digitRequirement = document.getElementById('digit-requirement');
+    // 监听密码输入事件
+    passwordInput.addEventListener('input', () => {
+        // 获取输入的密码
+        const password = passwordInput.value;
+        // 检测密码长度
+        if (password.length >= 8) {
+            lengthRequirement.style.color = 'green';
+            lengthRequirement.textContent = `✅密码长度为${password.length}`;
+        } else {
+            lengthRequirement.style.color = 'yellow';
+            lengthRequirement.textContent = `⚠️密码长度为${password.length}，需至少包括8个字符`;
+        }
+        // 正则检测密码是否包含数字
+        if (/\d/.test(password)) {
+            digitRequirement.style.color = 'green';
+            digitRequirement.textContent = '✅密码已经包含了至少一个数字';
+        } else {
+            digitRequirement.style.color = 'yellow';
+            digitRequirement.textContent = '⚠️密码需包含至少一个数字';
+        }
+    });
+
+    const password2Input = document.getElementById('id_password2');
+    const password2Requirement = document.getElementById('password2-requirement');
+    password2Input.addEventListener('input', () => {
+        // 获取输入的密码
+        const password = passwordInput.value;
+        if (password.length >= 8 && /\d/.test(password)) {
+            const password2 = password2Input.value;
+            if (password2 !== password) {
+                password2Requirement.style.color = 'yellow';
+                password2Requirement.textContent = '⚠️密码不相同'
+            }
+        }
+    });
+
+    // 获取跨站请求伪造保护令牌
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    // 获取用户名输入框和显示结果的元素
+    const usernameInput = document.getElementById('id_username');
+    const usernameResult = document.getElementById('username-result');
+    // 节流定时器防止用户名高频查询
+    let throttleTimer = null;
+    // 限制接口调用频率每1秒只能调用一次
+    const throttleDelay = 1000;
+    // 回调函数
+    const usernameCheck = () => {
+        // 获取输入的用户名
+        const username = usernameInput.value;
+        // 发送Ajax请求到服务器检查用户名是否存在
+        fetch('/check_username/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken,
+            },
+            body: JSON.stringify({ 'username': username }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log(data)
+            // 根据服务器返回的结果更新显示
+            if (data.username_exists) {
+                usernameResult.textContent = '用户名已存在';
+                usernameResult.style.color = 'yellow';
+            } else {
+                usernameResult.textContent = '';
+            }
+        })
+        .catch(error => {
+            console.error('Error checking username:', error);
+        });
+    }
+    // 监听用户名输入事件
+    usernameInput.addEventListener('input', () => {
+        if (!throttleTimer) {
+            throttleTimer = setTimeout(() => {
+                throttleTimer = null;
+                usernameCheck();
+            }, throttleDelay);
+        }
+    });
+    // 监听输入完成事件
+    usernameInput.addEventListener('change', usernameCheck);
+</script>
+{% endblock body_content %}

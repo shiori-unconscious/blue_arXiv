@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block head_content %}
+    <link rel="stylesheet" href="{% static 'mainpage/css/index.css' %}">
+    <title>blueArXiv</title>
+{% endblock %}
+
+{% block body_content %}
+<div class="header-container">
+    <img src="{% static 'mainpage/images/arXiv.png' %}" alt="logo" class="logo">
+    <div class="search-container">
+        <form class="search-form" action="#" method="post">
+            {% csrf_token %}
+            <input type="text" name="search" class="search-input" placeholder="搜索论文...">
+            <select name="search_field" class="search-field">
+                <option value="all">全部</option>
+                <option value="title">标题</option>
+                <option value="author">作者</option>
+                <option value="abstract">摘要</option>
+            </select>
+            <button type="submit" class="search-button">搜索</button>
+        </form>
+        {% if user.is_authenticated %}
+        <!-- 如果用户已登录，显示用户名和头像 -->
+        <div class="user-info">
+            <p>Welcome, {{ user.username }}!</p>
+            <!-- 如果用户有头像 -->
+            <div class="avatar-container">
+                {% if user.avatar %}
+                    <img src="{{ user.avatar.url }}" alt="User Avatar" class='avatar'>
+                {% else %}
+                    <img src="{% static 'mainpage/images/default_avatar.gif' %}" alt="Default Avatar" class='avatar'>
+                {% endif %}
+                <div class="dropdown-content">
+                    <form method="post" action="{% url 'user_home' user.username %}">
+                        {% csrf_token %}
+                        <button type="submit">用户资料</button>
+                    </form>
+                    <form method="post" action="{% url 'logout' %}">
+                        {% csrf_token %}
+                        <button type="submit">登出</button>
+                    </form>                        
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <!-- 如果用户未登录，显示登录按钮 -->
+        <form method="post" action="{% url 'user_login' %}">
+            {% csrf_token %}
+            <button type="submit" class="login-button">登录</button>
+        </form>
+        {% endif %}
+    </div>
+</div>
+
+<div class="container">
+    <section class="featured-articles">
+        {% if not user.is_authenticated %}
+        <h2>😄登录以获取更相关推荐</h2>
+        {% endif %}
+        
+        {% for article in articles %}            
+        <article>
+            {% if user.is_authenticated %}
+            <form method="post" action="{% url 'vote' article.arxiv_id %}">
+                {% csrf_token %}
+                <button type="submit" class="vote-up">👍</button>
+            </form>
+            <form method="post" action="{% url 'neg' article.arxiv_id %}">
+                {% csrf_token %}
+                <button type="submit" class="vote-up">🦶</button>
+            </form>
+            {% endif %}
+            <h3>{{ article.title }}</h3>
+            <p class="author">Author: {{ article.authors }}</p>
+            <p>Abstract: {{ article.abstract }}</p>
+        </article>
+        {% endfor %}
+    </section>
+</div>
+{% endblock %}

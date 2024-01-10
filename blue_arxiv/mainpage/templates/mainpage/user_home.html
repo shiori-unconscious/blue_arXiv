@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block head_content %}
+    <title>用户主页</title>
+{% endblock %}
+
+{% block body_content %}
+    <h1>User Home</h1>
+
+    <h2>Liked Content:</h2>
+    <ul>
+        {% for content in liked_content %}
+            <li>{{ content.title }}</li>
+        {% endfor %}
+    </ul>
+
+    <h2>Bookmarked Content:</h2>
+    <ul>
+        {% for content in bookmarked_content %}
+            <li>{{ content.title }}</li>
+        {% endfor %}
+    </ul>
+{% endblock %}

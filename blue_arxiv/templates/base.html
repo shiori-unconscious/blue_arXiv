@@ -1,0 +1,23 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="zh-hans">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'base_style.css' %}">
+    <link rel="manifest" href="{% static 'manifest.json' %}"/>
+    <link rel="shortcut icon" type="image/png" href="{% static 'favicon.ico' %}"/>
+    {% block head_content %}{% endblock %}
+</head>
+<body>
+    <div id="blur-container"></div>
+    <main>
+        {% block body_content %}
+            
+        {% endblock %}
+    </main>
+    <footer>
+        <p>&copy; 2023 blueArXiv. Shiori Aya.</p>
+    </footer>
+</body>
+</html>

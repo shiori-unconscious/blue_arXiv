@@ -1,0 +1,66 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Caches
+*.db
+*.sqlite3
+*.log
+
+# Virtual environment
+venv/
+env/
+
+# Media files
+media/
+
+# Static files
+staticfiles/
+
+# Secret key
+*.secret_key
+
+# Database configuration
+*.sqlite
+
+# IDE files
+.vscode/
+.idea/
+
+# Compiled Python files
+*.pyc
+
+# Dependency directories
+__pycache__/
+.pytest_cache/
+migrations/
+
+# Docker Compose
+docker-compose.yml
+docker-compose.override.yml
+*.dockerfile
+
+# Unit test / coverage reports
+htmlcov/
+.coverage
+
+# Translations
+*.mo
+
+# Local development settings
+local_settings.py
+
+# Ignore pipenv virtual environment
+Pipfile
+Pipfile.lock
+
+# Ignore Mac system files
+.DS_Store
+
+# Ignore temporary files
+*.swp
+*.swo
+
+archive/

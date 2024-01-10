@@ -1,0 +1,72 @@
+body {
+    background: url("../images/1692378248646.png") no-repeat center center fixed;
+    background-size: cover;
+    margin: 0;
+    align-items: center;
+    justify-content: center;
+}
+
+.flex-container {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.login-container {
+    background-color: rgba(255, 255, 255, 0.8); /* 登录框加入透明色遮罩 */
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 300px;
+    text-align: center;
+}
+
+.errorlist {
+    color: red;
+    margin: 10px 0;
+    padding: 0;
+}
+
+.errorlist li {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+h2 {
+    color: #333;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+label {
+    margin-bottom: 8px;
+}
+
+input {
+    padding: 8px;
+    margin-bottom: 16px;
+    width: 85%;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+button {
+    background-color: #007BFF;
+    color: #fff;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
