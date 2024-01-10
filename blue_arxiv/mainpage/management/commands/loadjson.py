@@ -1,6 +1,6 @@
 from datetime import datetime
 import json
-from mainpage.models import Paper, Journal, Category
+from mainpage.models import Paper, Category
 from django.core.management.base import BaseCommand
 from django.db import transaction
 from django.utils import timezone
@@ -24,11 +24,11 @@ class Command(BaseCommand):
         
     def handle(self, *args, **options):
         path = options['path']
-        paper_stuff = []
+        catelists = []
         papers = []
         self.stdout.write(self.style.SUCCESS("Processing JSON file and preparing data..."))
         with open(path, 'r', encoding='utf-8') as data:
-            for line in tqdm(data):
+            for line in tqdm(data.readlines()):
                 try:
                     entry = json.loads(line)
                 except json.JSONDecodeError as e:
@@ -38,10 +38,14 @@ class Command(BaseCommand):
                     timestamp = None
                     if versions is not None and len(versions)>=1:
                         timestamp = versions[-1]['created']
-                    category = entry.get('categories').split()
-                    if self.check_cs(category):
+                    categories = entry.get('categories').split()
+                    if self.check_cs(categories):
                         paper_id=entry.get('id')
-                        
+                        catelist = []
+                        for category in categories:
+                            obj, _ = Category.objects.get_or_create(name=category)
+                            catelist.append(obj)
+                            
                         papers.append(
                             Paper(
                                 arxiv_id=paper_id,
@@ -52,33 +56,37 @@ class Command(BaseCommand):
                                 upload_time=timezone.make_aware(datetime.strptime(timestamp if timestamp else "Fri, 23 Aug 1996 09:39:49 GMT", "%a, %d %b %Y %H:%M:%S %Z")),
                             )
                         )
+                        catelists.append(catelist)
                         
         self.stdout.write(self.style.SUCCESS("Finish Processing JSON file..."))
         # journals = [Journal(name=journal) for journal in journals if journal is not None]
-        categories = [Category(name=category) for category in categories if category is not None]
+        # categories = [Category(name=category) for category in categories if category is not None]
+        self.stdout.write(self.style.SUCCESS("Start inserting into database and updating many-to-many relationships..."))
         # 使用数据库事务提高插入效率
         with transaction.atomic():
             # 批量插入
             Paper.objects.bulk_create(papers)
+            for paper, category in zip(papers, catelists):
+                paper.categories.add(*category)
             # Journal.objects.bulk_create(journals)
-            Category.objects.bulk_create(categories)
+            # Category.objects.bulk_create(categories)
         
-        self.stdout.write(self.style.SUCCESS("Data insertion into database is successful."))
-        self.stdout.write(self.style.SUCCESS("Updating many-to-many relationships..."))
+        self.stdout.write(self.style.SUCCESS("Successfully insert data into database."))
+        # self.stdout.write(self.style.SUCCESS("Updating many-to-many relationships..."))
         
-        for paper_id, category in paper_stuff:
-            try:
-                paper = Paper.objects.get(arxiv_id=paper_id)
+        # for paper_id, category in paper_stuff:
+        #     try:
+        #         paper = Paper.objects.get(arxiv_id=paper_id)
                 
-                # journal_obj = Journal.objects.get(name=journal)
-                # paper.journal.add(journal_obj)
+        #         # journal_obj = Journal.objects.get(name=journal)
+        #         # paper.journal.add(journal_obj)
                 
-                category_obj = Category.objects.filter(name__in=category)
-                paper.categories.add(*category_obj)
+        #         category_obj = Category.objects.filter(name__in=category)
+        #         paper.categories.add(*category_obj)
                 
-            except Paper.DoesNotExist:
-                self.stdout.write(self.style.WARNING(f"Paper with arxiv_id={paper_id} does not exist. Skipping..."))
-            except Exception as e:            
-                self.stdout.write(self.style.ERROR(f"Error processing paper with arxiv_id={paper_id}: {e}"))
+        #     except Paper.DoesNotExist:
+        #         self.stdout.write(self.style.WARNING(f"Paper with arxiv_id={paper_id} does not exist. Skipping..."))
+        #     except Exception as e:            
+        #         self.stdout.write(self.style.ERROR(f"Error processing paper with arxiv_id={paper_id}: {e}"))
             
-        self.stdout.write(self.style.SUCCESS("Many-to-many relationships updated successfully."))
+        # self.stdout.write(self.style.SUCCESS("Many-to-many relationships updated successfully."))
