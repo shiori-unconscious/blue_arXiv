@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import main_page, user_home, vote, neg
+from .views import main_page, user_home, vote, neg, search
 from django.contrib.auth.views import LogoutView
 
 urlpatterns = [
@@ -8,4 +8,5 @@ urlpatterns = [
     path('user_home/<str:username>/', user_home, name='user_home'),
     path('vote/<str:papername>', vote, name='vote'),
     path('neg/<str:papername>', neg, name='neg'),
+    path('search', search, name="search")
 ]

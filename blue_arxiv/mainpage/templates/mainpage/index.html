@@ -2,9 +2,14 @@
 
 {% load static %}
 
+{% load filters %}
+
 {% block head_content %}
     <link rel="stylesheet" href="{% static 'mainpage/css/index.css' %}">
     <title>blueArXiv</title>
+    <script type="text/javascript" async
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML">
+    </script>    
 {% endblock %}
 
 {% block body_content %}
@@ -13,9 +18,9 @@
         <img src="{% static 'mainpage/images/arXiv.png' %}" alt="logo" style="height: 100%;">
     </a>
     <div class="search-container">
-        <form class="search-form" action="#" method="post">
+        <form class="search-form" action="{% url 'search' %}" method="post">
             {% csrf_token %}
-            <input type="text" name="search" class="search-input" placeholder="搜索论文...">
+            <input type="text" name="search_keyword" class="search-input" placeholder="搜索论文...">
             <select name="search_field" class="search-field">
                 <option value="all">全部</option>
                 <option value="title">标题</option>
@@ -31,9 +36,9 @@
             <!-- 如果用户有头像 -->
             <div class="avatar-container">
                 {% if user.avatar %}
-                    <img src="{{ user.avatar.url }}" alt="User Avatar" class='avatar'>
+                    <img src="{{ user.avatar.url }}" alt="User Avatar" class="avatar">
                 {% else %}
-                    <img src="{% static 'mainpage/images/default_avatar.gif' %}" alt="Default Avatar" class='avatar'>
+                    <img src="{% static 'mainpage/images/default_avatar.gif' %}" alt="Default Avatar" class="avatar">
                 {% endif %}
                 <div class="dropdown-content">
                     <form method="post" action="{% url 'user_home' user.username %}">
@@ -77,11 +82,45 @@
                 </form>
             </div>
             {% endif %}
-            <h3>{{ article.title }}</h3>
-            <p class="author">Author: {{ article.authors }}</p>
-            <p>Abstract: {{ article.abstract }}</p>
+            <h2 class="latex-content">
+                {% if keywords.0 %}
+                    {{ article.title|highlight:keyword|safe }}
+                {% else %}
+                    {{ article.title }}
+                {% endif %}
+            </h2>
+            <p class="author">
+                <span style="font-weight: bolder; margin-right: 5px;">Author:</span> 
+                {% if keywords.1 %}
+                    {{ article.authors|highlight:keyword|safe }}
+                {% else %}
+                    {{ article.authors }}
+                {% endif %}
+            <p class="abstract latex-content">
+                <span style="font-weight: bold; margin-right: 7px;">Abstract:</span>
+                {% if keywords.2 %}
+                    {{ article.abstract|highlight:keyword|safe }}
+                {% else %}
+                    {{ article.abstract }}
+                {% endif %}
+            </p>
         </article>
         {% endfor %}
     </section>
+    <script type="text/javascript">
+        window.addEventListener("load", function() {
+            MathJax.Hub.Config({
+                tex2jax: { inlineMath: [['$', '$'], ['\\(', '\\)']] },
+                processEscapes: true,
+                skipStartupTypeset: true,
+            });
+            for(element of document.querySelectorAll('.latex-content')) {
+                element.innerHTML = element.innerHTML.replace(/(?<!\$)(\\[a-zA-Z]+){(.*?)}(.*?)(?<!\$)/g, function(match, group) {
+                    return "$" + group[1] + "{" + group[2] + "}$";
+                });
+                MathJax.Hub.Queue(["Typeset", MathJax.Hub, element]);     
+            }
+        });
+    </script>
 </div>
 {% endblock %}
