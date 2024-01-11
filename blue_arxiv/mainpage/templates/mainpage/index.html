@@ -9,7 +9,9 @@
 
 {% block body_content %}
 <div class="header-container">
-    <img src="{% static 'mainpage/images/arXiv.png' %}" alt="logo" class="logo">
+    <a href="/admin" style="width: auto;height: 80%;">
+        <img src="{% static 'mainpage/images/arXiv.png' %}" alt="logo" style="height: 100%;">
+    </a>
     <div class="search-container">
         <form class="search-form" action="#" method="post">
             {% csrf_token %}
@@ -64,14 +66,16 @@
         {% for article in articles %}            
         <article>
             {% if user.is_authenticated %}
-            <form method="post" action="{% url 'vote' article.arxiv_id %}">
-                {% csrf_token %}
-                <button type="submit" class="vote-up">👍</button>
-            </form>
-            <form method="post" action="{% url 'neg' article.arxiv_id %}">
-                {% csrf_token %}
-                <button type="submit" class="vote-up">🦶</button>
-            </form>
+            <div class="vote">
+                <form method="post" action="{% url 'vote' article.arxiv_id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="vote-up">👍</button>
+                </form>
+                <form method="post" action="{% url 'neg' article.arxiv_id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="vote-up">🦶</button>
+                </form>
+            </div>
             {% endif %}
             <h3>{{ article.title }}</h3>
             <p class="author">Author: {{ article.authors }}</p>

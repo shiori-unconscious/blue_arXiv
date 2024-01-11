@@ -25,11 +25,6 @@ body {
     height: 8vh;
 }
 
-.logo {
-    width: auto;
-    height: 80%;
-}
-
 .search-container {
     display: flex;
     align-items: center;
@@ -163,4 +158,23 @@ article {
     border: 1px solid #ddd;
     padding: 10px;
     margin-bottom: 10px;
+}
+
+.vote {
+    display: flex;
+    justify-content: space-between;
+    width: 75px;
+    float: right;
+    margin: 5px;
+    button {
+        width: 25px;
+        height: auto;
+        background-color: #f9f9f9;
+        border: 1px solid #ddd;
+        box-shadow: none;
+        border-radius: 5px;
+    }
+    button:hover{
+        background-color: #d9d9d9;
+    }
 }
