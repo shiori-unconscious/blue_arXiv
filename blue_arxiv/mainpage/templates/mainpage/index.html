@@ -9,7 +9,8 @@
     <title>blueArXiv</title>
     <script type="text/javascript" async
         src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML">
-    </script>    
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.0.379/pdf.mjs" type="module"></script>
 {% endblock %}
 
 {% block body_content %}
@@ -64,10 +65,17 @@
 
 <div class="container">
     <section class="featured-articles">
-        {% if not user.is_authenticated %}
-        <h2>😄登录以获取更相关推荐</h2>
-        {% endif %}
-        
+        <div class="banner">
+            {% if not user.is_authenticated %}
+                <h2>😄登录以获取更相关推荐</h2>
+            {% else %}
+                <h2></h2>
+            {% endif %}
+            <img src="{% static 'mainpage/images/icon.png' %}" alt="change" class="columnbreak" id="cb">
+        </div>
+        <div id="pdf">
+
+        </div>
         {% for article in articles %}            
         <article>
             {% if user.is_authenticated %}
@@ -107,6 +115,31 @@
         </article>
         {% endfor %}
     </section>
+    <script type="module">
+        window.addEventListener("load", function() {
+            var pdfPath = '{% get_static_prefix %}' + "mainpage/js/web/compressed.tracemonkey-pldi-09.pdf";
+            var container = document.getElementById('pdf');
+            var { pdfjsLib } = globalThis;
+            pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.0.379/pdf.worker.mjs";
+            pdfjsLib.getDocument(pdfPath).promise.then(function(pdfDoc) {
+                for (var pageNum = 1; pageNum <= pdfDoc.numPages; pageNum++) {
+                    pdfDoc.getPage(pageNum).then(function(page) {
+                        var canvas = document.createElement('canvas');
+                        container.appendChild(canvas);
+                        var context = canvas.getContext('2d');
+                        var viewport = page.getViewport({ scale: 0.2 });
+                        canvas.width = viewport.width;
+                        canvas.height = viewport.height;
+                        var renderContext = {
+                            canvasContext: context,
+                            viewport: viewport
+                        };
+                        page.render(renderContext);
+                    });
+                }
+            });
+        });
+    </script>
     <script type="text/javascript">
         window.addEventListener("load", function() {
             MathJax.Hub.Config({
@@ -120,6 +153,19 @@
                 });
                 MathJax.Hub.Queue(["Typeset", MathJax.Hub, element]);     
             }
+        });
+        document.addEventListener("DOMContentLoaded", function() {
+            let columnbreak = document.getElementById("cb");
+            let click = false;
+            columnbreak.addEventListener("click", function() {
+                if (click) {
+                    columnbreak.style.backgroundColor = "#ffffff";
+                    click = false;
+                } else {
+                    columnbreak.style.backgroundColor = "#d9d9d9";
+                    click = true;
+                }
+            });
         });
     </script>
 </div>
