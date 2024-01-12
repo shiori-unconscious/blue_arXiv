@@ -15,11 +15,11 @@
 
 {% block body_content %}
 <div class="header-container">
-    <a href="/admin" style="width: auto;height: 80%;">
-        <img src="{% static 'mainpage/images/arXiv.png' %}" alt="logo" style="height: 100%;">
+    <a href="/admin">
+        <img src="{% static 'mainpage/images/arXiv.png' %}" alt="logo" class="logo">
     </a>
     <div class="search-container">
-        <form class="search-form" action="{% url 'search' %}" method="post">
+        <form class="search-form" action="{% url 'search' %}" method="post" id="search-form">
             {% csrf_token %}
             <input type="text" name="search_keyword" class="search-input" placeholder="搜索论文...">
             <select name="search_field" class="search-field">
@@ -71,76 +71,67 @@
             {% else %}
                 <h2></h2>
             {% endif %}
-            <img src="{% static 'mainpage/images/icon.png' %}" alt="change" class="columnbreak" id="cb">
+            <img src="{% static 'mainpage/images/columnbreak.png' %}" alt="change" class="columnbreak" id="cb">
         </div>
-        <div id="pdf">
-
-        </div>
-        {% for article in articles %}            
-        <article>
-            {% if user.is_authenticated %}
-            <div class="vote">
-                <form method="post" action="{% url 'vote' article.arxiv_id %}">
-                    {% csrf_token %}
-                    <button type="submit" class="vote-up">👍</button>
-                </form>
-                <form method="post" action="{% url 'neg' article.arxiv_id %}">
-                    {% csrf_token %}
-                    <button type="submit" class="vote-up">🦶</button>
-                </form>
-            </div>
+        <div id="article-container">
+            {% if  articles %}
+                {% for article in articles %} 
+                    <article>
+                        <div style="display: flex; flex-direction: row; align-items: center;">
+                            <h2 class="latex-content">
+                                {% if keywords.0 %}
+                                    {{ article.title|highlight:keyword|safe }}
+                                {% else %}
+                                    {{ article.title }}
+                                {% endif %}
+                            </h2>
+                            {% if user.is_authenticated %}
+                            <div class="vote">
+                                <form method="post" action="{% url 'vote' article.arxiv_id %}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="vote-up">👍</button>
+                                </form>
+                                <form method="post" action="{% url 'neg' article.arxiv_id %}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="vote-up">🦶</button>
+                                </form>
+                            </div>
+                            {% endif %}
+                        </div>
+                        <p class="author">
+                            <span style="font-weight: bolder; margin-right: 5px;">Author:</span> 
+                            {% if keywords.1 %}
+                                {{ article.authors|nameparser|highlight:keyword|safe }}
+                            {% else %}
+                                {{ article.authors|nameparser|safe }}
+                            {% endif %}
+                        <p class="abstract latex-content">
+                            <span style="font-weight: bold; margin-right: 7px;">Abstract:</span>
+                            {% if keywords.2 %}
+                                {{ article.abstract|highlight:keyword|safe }}
+                            {% else %}
+                                {{ article.abstract }}
+                            {% endif %}
+                        </p>
+                        <div class="showpdf">显示PDF</div>
+                        <span style="display: none;">{{ article.arxiv_id }}</span>
+                    </article>
+                {% endfor %}
+                <div id="row1" class="column"></div>
+                <div id="row2" class="column"></div>
+            {% else %}
+                <div>暂无对应结果...</div>
             {% endif %}
-            <h2 class="latex-content">
-                {% if keywords.0 %}
-                    {{ article.title|highlight:keyword|safe }}
-                {% else %}
-                    {{ article.title }}
-                {% endif %}
-            </h2>
-            <p class="author">
-                <span style="font-weight: bolder; margin-right: 5px;">Author:</span> 
-                {% if keywords.1 %}
-                    {{ article.authors|highlight:keyword|safe }}
-                {% else %}
-                    {{ article.authors }}
-                {% endif %}
-            <p class="abstract latex-content">
-                <span style="font-weight: bold; margin-right: 7px;">Abstract:</span>
-                {% if keywords.2 %}
-                    {{ article.abstract|highlight:keyword|safe }}
-                {% else %}
-                    {{ article.abstract }}
-                {% endif %}
-            </p>
-        </article>
-        {% endfor %}
+        </div>
     </section>
-    <script type="module">
-        window.addEventListener("load", function() {
-            var pdfPath = '{% get_static_prefix %}' + "mainpage/js/web/compressed.tracemonkey-pldi-09.pdf";
-            var container = document.getElementById('pdf');
-            var { pdfjsLib } = globalThis;
-            pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.0.379/pdf.worker.mjs";
-            pdfjsLib.getDocument(pdfPath).promise.then(function(pdfDoc) {
-                for (var pageNum = 1; pageNum <= pdfDoc.numPages; pageNum++) {
-                    pdfDoc.getPage(pageNum).then(function(page) {
-                        var canvas = document.createElement('canvas');
-                        container.appendChild(canvas);
-                        var context = canvas.getContext('2d');
-                        var viewport = page.getViewport({ scale: 0.2 });
-                        canvas.width = viewport.width;
-                        canvas.height = viewport.height;
-                        var renderContext = {
-                            canvasContext: context,
-                            viewport: viewport
-                        };
-                        page.render(renderContext);
-                    });
-                }
-            });
-        });
-    </script>
     <script type="text/javascript">
+        function uploadform(keyword) {
+            let form = document.getElementById("search-form");
+            form.elements["search_keyword"].value = keyword;
+            form.elements["search_field"].value = "author";
+            console.log(form);
+            form.submit();
+        }
         window.addEventListener("load", function() {
             MathJax.Hub.Config({
                 tex2jax: { inlineMath: [['$', '$'], ['\\(', '\\)']] },
@@ -157,14 +148,76 @@
         document.addEventListener("DOMContentLoaded", function() {
             let columnbreak = document.getElementById("cb");
             let click = false;
+            let div = document.getElementById("article-container");
+            let row1 = document.getElementById("row1");
+            let row2 = document.getElementById("row2");
+            let articles = document.querySelectorAll("article");
+            let showpdfs = document.querySelectorAll(".showpdf");
+            showpdfs.forEach((btn) => {
+                let show = false;
+                let arxiv_id = btn.nextElementSibling.innerText;
+                btn.addEventListener("click", function(event) {
+                    let div = event.target;
+                    let sibling = div.previousElementSibling;
+                    if (show) {
+                        div.innerText = "显示PDF";
+                        if (sibling) {
+                            sibling.classList.add('invisible');
+                        }
+                        show = false;
+                        return;
+                    }
+                    if (sibling.classList.contains('invisible')) {
+                        sibling.classList.remove('invisible');
+                        show = true;
+                        return;
+                    }
+                    div.innerText = "隐藏PDF";
+                    let parent = div.parentNode;
+                    let container = document.createElement("div");
+                    parent.insertBefore(container, div);
+                    var pdfPath = "https://arxiv.org/pdf/"+arxiv_id+".pdf";
+                    console.log(pdfPath);
+                    var { pdfjsLib } = globalThis;
+                    pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.0.379/pdf.worker.mjs";
+                    pdfjsLib.getDocument(pdfPath).promise.then(function(pdfDoc) {
+                        for (var pageNum = 1; pageNum <= pdfDoc.numPages; pageNum++) {
+                            pdfDoc.getPage(pageNum).then(function(page) {
+                                var canvas = document.createElement('canvas');
+                                container.appendChild(canvas);
+                                var context = canvas.getContext('2d');
+                                var viewport = page.getViewport({ scale: 0.3 });
+                                canvas.width = viewport.width;
+                                canvas.height = viewport.height;
+                                var renderContext = {
+                                    canvasContext: context,
+                                    viewport: viewport
+                                };
+                                page.render(renderContext);
+                            });
+                        }
+                    });
+                    show = true;
+                });
+            });
             columnbreak.addEventListener("click", function() {
                 if (click) {
-                    columnbreak.style.backgroundColor = "#ffffff";
-                    click = false;
+                    div.style.display = "block";
+                    articles.forEach((article) => {
+                        div.appendChild(article);
+                    });
+                    columnbreak.classList.remove('gray');
                 } else {
-                    columnbreak.style.backgroundColor = "#d9d9d9";
-                    click = true;
+                    div.style.display = "flex";
+                    for (let i = 0; i < Math.ceil(articles.length / 2); ++i) {
+                        row1.appendChild(articles[i]);
+                    }
+                    for (let i = Math.ceil(articles.length / 2); i < articles.length; ++i) {
+                        row2.appendChild(articles[i]);
+                    }
+                    columnbreak.classList.add('gray');
                 }
+                click = !click;
             });
         });
     </script>

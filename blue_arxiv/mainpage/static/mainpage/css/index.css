@@ -8,6 +8,11 @@
     height: 8vh;
 }
 
+.logo {
+    height: 50px;
+    width: auto;
+}
+
 .search-container {
     display: flex;
     align-items: center;
@@ -54,22 +59,18 @@
 .user-info {
     display: flex;
     align-items: center;
-    height: 100%;
+    justify-content: space-between;
     margin-left: 10px;
 }
 
 .avatar {
-    height: 80%;
+    height: 45px;
+    width: auto;
     object-fit: cover;
     border-radius: 50%;
     margin-left: 10px; 
     cursor: pointer;
-}
-
-.avatar-container {
-    position: relative;
-    display: inline-block;
-    height: 100%;
+    
 }
 
 .dropdown-content {
@@ -113,13 +114,14 @@
 }
 
 .container {
-    max-width: 1200px;
+    max-width: 1700px;
     margin: 0 auto;
     padding: 0 20px;
 }
 
 h1, h2, h3 {
-    color: #007BFF;
+    /* color: #007BFF; */
+    color: #0066cc;
 }
 
 .banner {
@@ -133,21 +135,60 @@ h1, h2, h3 {
     height: 25px; 
     width: auto;
     cursor: pointer;
+    padding: 5px;
+    border-radius: 5px;
+}
+
+.columnbreak.gray {
+    background-color: #d9d9d9;
 }
 
 .columnbreak:hover {
     background-color: #d9d9d9;
 }
 
+.showpdf {
+    font-weight: bold;
+    background-color: #ddd;
+    color: #333;
+    cursor: pointer;
+    border-radius: 5px;
+    padding: 1px 6px;
+    margin: 0px auto;
+}
+
+.invisible {
+    display: none;
+}
+
+.showpdf:hover {
+    background-color: #888;
+}
+
 .author {
     font-weight: bold;
-    color: #007BFF;
+    font-size: medium;
+    color: #0066cc;
 }
 
 .abstract {
-    color: #007BFF;
+    font-size: medium;
+    color: #004080;
     overflow: scroll;
     max-height: 150px;
+}
+
+#article-container{
+    width: 100%;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: start;
+}
+
+.column {
+    display: flex;
+    flex-direction: column;
+    width: 48.5%;
 }
 
 button:hover {
@@ -159,6 +200,8 @@ section.featured-articles {
 }
 
 article {
+    display: flex;
+    flex-direction: column;
     border: 1px solid #ddd;
     padding: 10px;
     margin-bottom: 10px;
@@ -167,12 +210,13 @@ article {
 .vote {
     display: flex;
     justify-content: space-between;
-    width: 60px;
-    float: right;
-    margin: 5px;
+    margin-left: auto;
+    margin-right: 5px;
+    padding: 5px;
+    width: 62px;
     button {
         width: 25px;
-        height: auto;
+        height: 25px;
         background-color: #f9f9f9;
         border: 1px solid #ddd;
         box-shadow: none;
