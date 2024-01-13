@@ -7,9 +7,9 @@ class CustomValidator:
         pass
 
     def validate(self, password, user=None):
-        if len(password) < 12:
+        if len(password) < 8:
             raise ValidationError(
-                _("你的密码至少要包括12个字符"),
+                _("你的密码至少要包括8个字符"),
                 code='password_too_short',
             )
         if bool(re.search(r'\d', password)) == False:
@@ -20,5 +20,5 @@ class CustomValidator:
             
 
     def get_help_text(self):
-        return _("你的密码至少要包括12个字符"
+        return _("你的密码至少要包括8个字符"
                  "你的密码至少要包括一个数字")

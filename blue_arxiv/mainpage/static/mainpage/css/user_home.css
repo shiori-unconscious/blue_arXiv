@@ -1,0 +1,246 @@
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background-color: #007BFF;
+    color: #fff;
+    height: 8vh;
+}
+
+.logo {
+    height: 50px;
+    width: auto;
+}
+
+.search-container {
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+
+.search-form {
+    display: flex;
+    align-items: center;
+}
+
+.search-field {
+    padding: 8px;
+    margin-right: 4px;
+}
+
+.search-input {
+    padding: 10px;
+    margin-right: 10px;
+    border: none;
+    border-radius: 4px;
+}
+
+.search-button {
+    background-color: #0056b3;
+    color: #fff;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    margin-left: 4px;
+    cursor: pointer;
+}
+
+.login-button {
+    background-color: #0056b3;
+    color: #fff;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    margin-left: 10px;
+    cursor: pointer;
+}
+
+.return-button {
+    background-color: #0056b3;
+    color: #fff;
+    padding: 7px 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    height: 20px;
+    width: 40px;
+    text-align: center;
+    margin-left: auto;
+    margin-right: 10vw;
+}
+
+.return-button:hover {
+    background-color: #003366;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-left: 10px;
+}
+
+.avatar {
+    height: 45px;
+    width: auto;
+    object-fit: cover;
+    border-radius: 50%;
+    margin-left: 10px; 
+    cursor: pointer;
+    
+}
+
+.dropdown-content {
+    display: none;
+    right: 3px;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 150px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    z-index: 1;
+    flex-direction: column;
+}
+
+.dropdown-content button {
+    width: 100%;
+    padding: 12px 16px;
+    display: block;
+    text-decoration: none;
+    color: #333;
+    border: none;
+    background-color: transparent;
+    text-align: left;
+    border-radius: 8px;
+}
+
+.dropdown-content button + button {
+    border-top: 1px solid #ddd; /* 添加上边框分隔线 */
+}
+
+.dropdown-content button:hover {
+    background-color: #3498db;
+}
+
+.avatar-container:hover .dropdown-content {
+    display: flex;
+}
+
+.vote-up {
+    margin-left: auto;
+}
+
+.container {
+    max-width: 1700px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+h1, h2, h3 {
+    /* color: #007BFF; */
+    color: #0066cc;
+}
+
+.banner {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.columnbreak {
+    height: 25px; 
+    width: auto;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 5px;
+}
+
+.columnbreak.gray {
+    background-color: #d9d9d9;
+}
+
+.columnbreak:hover {
+    background-color: #d9d9d9;
+}
+
+.showpdf {
+    font-weight: bold;
+    background-color: #ddd;
+    color: #333;
+    cursor: pointer;
+    border-radius: 5px;
+    padding: 1px 6px;
+    margin: 0px auto;
+}
+
+.invisible {
+    display: none;
+}
+
+.showpdf:hover {
+    background-color: #888;
+}
+
+.author {
+    font-weight: bold;
+    font-size: medium;
+    color: #0066cc;
+}
+
+.abstract {
+    font-size: medium;
+    color: #004080;
+    overflow: scroll;
+    max-height: 150px;
+}
+
+#article-container{
+    width: 100%;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: start;
+}
+
+.column {
+    display: flex;
+    flex-direction: column;
+    width: 48.5%;
+}
+
+button:hover {
+    background-color: #003366;
+}
+
+section.featured-articles {
+    margin-top: 20px;
+}
+
+article {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+.vote {
+    display: flex;
+    justify-content: space-between;
+    margin-left: auto;
+    margin-right: 5px;
+    padding: 5px;
+    width: 62px;
+    button {
+        width: 25px;
+        height: 25px;
+        background-color: #f9f9f9;
+        border: 1px solid #ddd;
+        box-shadow: none;
+        border-radius: 5px;
+    }
+    button:hover{
+        background-color: #d9d9d9;
+    }
+}

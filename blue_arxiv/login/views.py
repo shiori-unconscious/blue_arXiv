@@ -6,6 +6,7 @@ from .forms import LoginForm, RegisterForm
 from .models import CustomUser
 import json
 
+
 @require_POST
 def check_username(request):
     try:

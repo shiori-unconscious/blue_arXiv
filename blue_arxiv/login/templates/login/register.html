@@ -70,14 +70,18 @@
 
     const password2Input = document.getElementById('id_password2');
     const password2Requirement = document.getElementById('password2-requirement');
-    password2Input.addEventListener('input', () => {
-        // 获取输入的密码
+    password2Input.addEventListener('blur', () => {
         const password = passwordInput.value;
         if (password.length >= 8 && /\d/.test(password)) {
             const password2 = password2Input.value;
+            console.log(password,password2)
             if (password2 !== password) {
                 password2Requirement.style.color = 'yellow';
-                password2Requirement.textContent = '⚠️密码不相同'
+                password2Requirement.textContent = '⚠️密码不相同';
+            }
+            else {
+                password2Requirement.style.color = 'green';
+                password2Requirement.textContent = '✅密码一致';
             }
         }
     });

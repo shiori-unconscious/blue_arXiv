@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
+from mainpage.models import Paper
+
 
 class CustomUserManager(BaseUserManager):
     def create_user(self, username, password=None, **extra_fields):
@@ -18,6 +20,8 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     objects = CustomUserManager()
+    liked_content = models.ManyToManyField(Paper, related_name="liked_by_user")
+    disliked_content = models.ManyToManyField(Paper, related_name="disliked_by_user")
     USERNAME_FIELD = 'username'
 
     def get_username(self):

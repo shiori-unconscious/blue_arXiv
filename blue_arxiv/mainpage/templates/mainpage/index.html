@@ -42,7 +42,7 @@
                     <img src="{% static 'mainpage/images/default_avatar.gif' %}" alt="Default Avatar" class="avatar">
                 {% endif %}
                 <div class="dropdown-content">
-                    <form method="post" action="{% url 'user_home' user.username %}">
+                    <form method="post" action="{% url 'user_home' %}">
                         {% csrf_token %}
                         <button type="submit">用户资料</button>
                     </form>
@@ -79,11 +79,13 @@
                     <article>
                         <div style="display: flex; flex-direction: row; align-items: center;">
                             <h2 class="latex-content">
+                                <a href="{{ 'https://arxiv.org/abs/'|add:'/'|add:article.arxiv_id }}" style="font-size: large; color: #0066cc;">
                                 {% if keywords.0 %}
                                     {{ article.title|highlight:keyword|safe }}
                                 {% else %}
                                     {{ article.title }}
                                 {% endif %}
+                                </a>
                             </h2>
                             {% if user.is_authenticated %}
                             <div class="vote">
@@ -105,6 +107,7 @@
                             {% else %}
                                 {{ article.authors|nameparser|safe }}
                             {% endif %}
+                        </p>
                         <p class="abstract latex-content">
                             <span style="font-weight: bold; margin-right: 7px;">Abstract:</span>
                             {% if keywords.2 %}

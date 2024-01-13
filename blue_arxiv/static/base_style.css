@@ -12,7 +12,7 @@ main {
 
 footer {
     display: flex;
-    background-color: #fafafa;
+    /* background-color: #fafafa; */
     align-items: center;
     justify-content: center;
     p {
