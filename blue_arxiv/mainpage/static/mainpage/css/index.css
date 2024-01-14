@@ -109,10 +109,6 @@
     display: flex;
 }
 
-.vote-up {
-    margin-left: auto;
-}
-
 .container {
     max-width: 1700px;
     margin: 0 auto;

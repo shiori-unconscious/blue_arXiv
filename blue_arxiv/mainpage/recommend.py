@@ -35,11 +35,31 @@ class Recommend:
             data['text'].append(dislike.abstract)
             self.exclude.append(dislike.arxiv_id)
             data['label'].append(1)
-            
-        self.data = pd.DataFrame(data).set_index('id')
-
+        
+        if len(self.exclude)==0:
+            return
+        
+        data = pd.DataFrame(data).set_index('id')
+        self.pipeline = Pipeline([
+            ('tfidf', TfidfVectorizer(stop_words=stopwords.words('english'))),
+            ('svm', SVC(kernel='linear'))
+        ])
+        try:
+            self.pipeline.fit(data['text'], data['label'])
+        except ValueError as err:
+            print(err)
+        
     def recommend(self):
-        return Paper.objects.exclude(arxiv_id__in=self.exclude).order_by('?')[:5]
+        if len(self.exclude)==0:
+            papers = Paper.objects.exclude(arxiv_id__in=self.exclude).order_by('?')[:5]
+        else:
+            papers = Paper.objects.exclude(arxiv_id__in=self.exclude).order_by('?')[:1000]
+            papers_texts = [paper.abstract for paper in papers]
+            result = self.pipeline.predict(papers_texts)
+            papers = [paper for (paper, res) in zip(papers, result) if res==0]
+            print(len(papers))
+            papers = papers[:5]
+        return papers
 
     def add(self, paper, favi = False):
         self.exclude.append(paper.arxiv_id)

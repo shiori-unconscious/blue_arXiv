@@ -8,12 +8,10 @@ from .recommend import Recommend
 @login_required
 def delete(request, papername):
     user_model = request.user
-    if Paper.objects.filter(arxiv_id=papername).exists():
-        if user_model.liked_content.filter(arxiv_id=papername).exists():
-            user_model.liked_content.get(arxiv_id=papername).delete()
-        if user_model.disliked_content.filter(arxiv_id=papername).exists():
-            user_model.disliked_content.get(arxiv_id=papername).delete()
-    
+    paper = Paper.objects.get(arxiv_id=papername)
+    if paper:
+        user_model.liked_content.remove(paper)
+        user_model.disliked_content.remove(paper)
     return user_home(request)
 
 @login_required
@@ -21,28 +19,26 @@ def neg(request, papername):
     user_model = request.user
     paper = Paper.objects.get(arxiv_id=papername)
     if paper:
-        if user_model.liked_content.filter(arxiv_id=papername).exists():
-            user_model.liked_content.get(arxiv_id=papername).delete()            
-        if paper not in user_model.disliked_content.all():
-            user_model.disliked_content.add(paper)
-    articles = Paper.objects.all().order_by('?')[:10]
-    for article in articles:
-        article.arxiv_id = article.arxiv_id.split('/')[-1]
-    return render(request, 'mainpage/index.html', {'articles': articles})
+        user_model.liked_content.remove(paper)           
+        user_model.disliked_content.add(paper)
+    recommend = Recommend(request.user)
+    articles = recommend.recommend()
+    return JsonResponse({'data': [{'title': article.title, 'abstract': article.abstract,
+                        'authors': article.authors, 'arxiv_id': article.arxiv_id.split('/')[-1]} 
+                        for article in articles]}, status=200)
 
 @login_required
 def vote(request, papername):
     user_model = request.user
     paper = Paper.objects.get(arxiv_id=papername)
     if paper:
-        if user_model.disliked_content.filter(arxiv_id=papername).exists():
-            user_model.disliked_content.get(arxiv_id=papername).delete()            
-        if paper not in user_model.liked_content.all():
-            user_model.liked_content.add(paper)
-    articles = Paper.objects.all().order_by('?')[:10]
-    for article in articles:
-        article.arxiv_id = article.arxiv_id.split('/')[-1]
-    return render(request, 'mainpage/index.html', {'articles': articles})
+        user_model.disliked_content.remove(paper)          
+        user_model.liked_content.add(paper)
+    recommend = Recommend(request.user)
+    articles = recommend.recommend()
+    return JsonResponse({'data': [{'title': article.title, 'abstract': article.abstract,
+                        'authors': article.authors, 'arxiv_id': article.arxiv_id.split('/')[-1]} 
+                        for article in articles]}, status=200)
 
 
 def main_page(request):

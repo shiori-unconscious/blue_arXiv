@@ -89,14 +89,8 @@
                             </h2>
                             {% if user.is_authenticated %}
                             <div class="vote">
-                                <form method="post" action="{% url 'vote' article.arxiv_id %}">
-                                    {% csrf_token %}
-                                    <button type="submit" class="vote-up">👍</button>
-                                </form>
-                                <form method="post" action="{% url 'neg' article.arxiv_id %}">
-                                    {% csrf_token %}
-                                    <button type="submit" class="vote-up">🦶</button>
-                                </form>
+                                <button data-arxiv-id="{{ article.arxiv_id }}" onclick="vote(true, this)">👍</button>
+                                <button data-arxiv-id="{{ article.arxiv_id }}" onclick="vote(false, this)">🦶</button>
                             </div>
                             {% endif %}
                         </div>
@@ -128,6 +122,32 @@
         </div>
     </section>
     <script type="text/javascript">
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        function vote(up, btn) {
+            let arxiv_id = btn.dataset.arxivId;
+            if (up) {
+                url = '/vote/' + arxiv_id;
+            }
+            else {
+                url = '/neg/' + arxiv_id;
+            }
+            fetch(url, {
+                method: 'POST',
+                credentials: 'same-origin',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken,
+                },
+                body: null,
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data)
+            })
+            .catch(error => {
+                console.error('Error', error);
+            });
+        }
         function uploadform(keyword) {
             let form = document.getElementById("search-form");
             form.elements["search_keyword"].value = keyword;

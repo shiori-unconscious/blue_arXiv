@@ -41,14 +41,10 @@
     </div>
 </div>
 <script>
-    // 获取密码输入框
     const passwordInput = document.getElementById('id_password');
-    // 获取显示密码要求的元素
     const lengthRequirement = document.getElementById('length-requirement');
     const digitRequirement = document.getElementById('digit-requirement');
-    // 监听密码输入事件
     passwordInput.addEventListener('input', () => {
-        // 获取输入的密码
         const password = passwordInput.value;
         // 检测密码长度
         if (password.length >= 8) {
@@ -88,16 +84,12 @@
 
     // 获取跨站请求伪造保护令牌
     const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-    // 获取用户名输入框和显示结果的元素
     const usernameInput = document.getElementById('id_username');
     const usernameResult = document.getElementById('username-result');
     // 节流定时器防止用户名高频查询
     let throttleTimer = null;
-    // 限制接口调用频率每1秒只能调用一次
     const throttleDelay = 1000;
-    // 回调函数
     const usernameCheck = () => {
-        // 获取输入的用户名
         const username = usernameInput.value;
         // 发送Ajax请求到服务器检查用户名是否存在
         fetch('/check_username/', {

@@ -65,7 +65,9 @@
                         <article>
                             <div style="display: flex; flex-direction: row; align-items: center;">
                                 <h2 class="latex-content">
-                                    {{ article.title }}
+                                    <a href="{{ 'https://arxiv.org/abs/'|add:'/'|add:article.arxiv_id }}" style="font-size: large; color: #0066cc;">
+                                        {{ article.title }}
+                                    </a>
                                 </h2>
                                 {% if user.is_authenticated %}
                                     <form method="post" action="{% url 'remove' article.arxiv_id %}">
