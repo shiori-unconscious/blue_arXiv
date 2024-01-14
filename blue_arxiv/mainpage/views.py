@@ -2,7 +2,6 @@ from django.shortcuts import render
 from .models import Paper
 from django.db import models
 from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse
 from .recommend import Recommend
 
 @login_required
@@ -12,6 +11,7 @@ def delete(request, papername):
     if paper:
         user_model.liked_content.remove(paper)
         user_model.disliked_content.remove(paper)
+        
     return user_home(request)
 
 @login_required
@@ -21,11 +21,8 @@ def neg(request, papername):
     if paper:
         user_model.liked_content.remove(paper)           
         user_model.disliked_content.add(paper)
-    recommend = Recommend(request.user)
-    articles = recommend.recommend()
-    return JsonResponse({'data': [{'title': article.title, 'abstract': article.abstract,
-                        'authors': article.authors, 'arxiv_id': article.arxiv_id.split('/')[-1]} 
-                        for article in articles]}, status=200)
+
+    return render(request, 'mainpage/article.html', {'articles': Recommend(request.user).recommend()})
 
 @login_required
 def vote(request, papername):
@@ -34,11 +31,9 @@ def vote(request, papername):
     if paper:
         user_model.disliked_content.remove(paper)          
         user_model.liked_content.add(paper)
-    recommend = Recommend(request.user)
-    articles = recommend.recommend()
-    return JsonResponse({'data': [{'title': article.title, 'abstract': article.abstract,
-                        'authors': article.authors, 'arxiv_id': article.arxiv_id.split('/')[-1]} 
-                        for article in articles]}, status=200)
+
+    return render(request, 'mainpage/article.html', {'articles': Recommend(request.user).recommend()})
+
 
 
 def main_page(request):

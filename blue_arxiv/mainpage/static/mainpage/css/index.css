@@ -221,3 +221,20 @@ article {
         background-color: #d9d9d9;
     }
 }
+
+.recommend-container {
+    margin-left: auto; 
+    display: flex; 
+    flex-direction: column; 
+    width: 90%; 
+    border: #ccc solid 1px; 
+    background-color: #eee;
+}
+
+.fold {
+    font-weight: bold; margin-top: auto; padding: 3px; margin-left: auto; text-decoration-line: underline; color: #0066cc; cursor: pointer;
+}
+
+.remove-recommend {
+    font-weight: bold; margin-top: auto; padding: 3px; margin-left: auto; text-decoration-line: underline; color: #0066cc; cursor: pointer;
+}

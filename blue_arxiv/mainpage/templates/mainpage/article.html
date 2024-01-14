@@ -1,0 +1,53 @@
+{% load filters %}
+<div class="recommend-container">
+    <div style="display: flex; flex-direction: row;">
+        <h3>推荐</h3>
+        <span class="fold">收起</span>
+        <span class="remove-recommend">移除推荐</span>
+    </div>
+    {% if  articles %}
+    {% for article in articles %} 
+        <article>
+            <div style="display: flex; flex-direction: row; align-items: center;">
+                <h2 class="latex-content">
+                    <a href="{{ 'https://arxiv.org/abs/'|add:'/'|add:article.arxiv_id }}" style="font-size: large; color: #0066cc;">
+                    {% if keywords.0 %}
+                        {{ article.title|highlight:keyword|safe }}
+                    {% else %}
+                        {{ article.title }}
+                    {% endif %}
+                    </a>
+                </h2>
+                {% if user.is_authenticated %}
+                <div class="vote">
+                    <button data-arxiv-id="{{ article.arxiv_id }}" onclick="vote(true, this)">👍</button>
+                    <button data-arxiv-id="{{ article.arxiv_id }}" onclick="vote(false, this)">🦶</button>
+                </div>
+                {% endif %}
+            </div>
+            <p class="author">
+                <span style="font-weight: bolder; margin-right: 5px;">Author:</span> 
+                {% if keywords.1 %}
+                    {{ article.authors|nameparser|highlight:keyword|safe }}
+                {% else %}
+                    {{ article.authors|nameparser|safe }}
+                {% endif %}
+            </p>
+            <p class="abstract latex-content">
+                <span style="font-weight: bold; margin-right: 7px;">Abstract:</span>
+                {% if keywords.2 %}
+                    {{ article.abstract|highlight:keyword|safe }}
+                {% else %}
+                    {{ article.abstract }}
+                {% endif %}
+            </p>
+            <div class="showpdf">显示PDF</div>
+            <span style="display: none;">{{ article.arxiv_id }}</span>
+        </article>
+    {% endfor %}
+    <div id="row1" class="column"></div>
+    <div id="row2" class="column"></div>
+    {% else %}
+    <div>暂无对应结果...</div>
+    {% endif %}
+</div>

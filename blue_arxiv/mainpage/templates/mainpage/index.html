@@ -125,12 +125,7 @@
         const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
         function vote(up, btn) {
             let arxiv_id = btn.dataset.arxivId;
-            if (up) {
-                url = '/vote/' + arxiv_id;
-            }
-            else {
-                url = '/neg/' + arxiv_id;
-            }
+            let url = up ? '/vote/' + arxiv_id : '/neg/' + arxiv_id;
             fetch(url, {
                 method: 'POST',
                 credentials: 'same-origin',
@@ -140,9 +135,41 @@
                 },
                 body: null,
             })
-            .then(response => response.json())
+            .then((response) => {
+                if (response.ok) {
+                    return response.text();
+                } else {
+                    throw new Error("networkfail");
+                }
+            })
             .then(data => {
-                console.log(data)
+                let currentArticle = btn.closest('article');
+                let show = true;
+                currentArticle.insertAdjacentHTML('afterend', data);
+                let fold = currentArticle.nextElementSibling.querySelector(".fold");
+                let remove = currentArticle.nextElementSibling.querySelector(".remove-recommend");
+                let articles = currentArticle.nextElementSibling.querySelectorAll("article");
+                console.log(currentArticle.nextElementSibling); // 输出 nextSibling，确保它不为 null
+                console.log(currentArticle.nextElementSibling.querySelector(".remove-recommend")); // 输出查找结果
+
+                remove.addEventListener('click', (self) => {
+                    currentArticle.nextElementSibling.remove();
+                });
+                fold.addEventListener('click', (self) => {
+                    if (show) {
+                        articles.forEach((article) => {
+                            article.classList.add('invisible');
+                        });
+                        fold.innerText = "展开";
+                    }
+                    else {
+                        articles.forEach((article) => {
+                            article.classList.remove('invisible');
+                        });
+                        fold.innerText = "收起";
+                    }
+                    show = !show;
+                });
             })
             .catch(error => {
                 console.error('Error', error);
